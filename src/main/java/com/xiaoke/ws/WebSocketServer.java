@@ -95,8 +95,9 @@ public class WebSocketServer {
      * @param error 异常
      */
     @OnError
-    public void onError( Throwable error) throws IOException {
-        this.session.getBasicRemote().sendText("发生错误："+error.getMessage());
+    public void onError(Throwable error) throws IOException {
+        String msg = String.valueOf(new ResponseMessage(true, null, "发生错误："+error.getMessage()));
+        this.session.getBasicRemote().sendText(msg);
         log.error("用户{}发生错误，原因是：{}",this.userName,error.getMessage());
     }
 
