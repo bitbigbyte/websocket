@@ -1,0 +1,71 @@
+# 编译后的class文件,忽略所有以[.class]结尾的文件
+*.class
+
+# 日志文件,忽略所有以[.log]结尾的文件.
+*.log
+
+# BlueJ 文件,忽略所有以[.ctxt]结尾的文件.
+*.ctxt
+
+# Mobile Tools for Java (J2ME),忽略[.mtj.tmp/]目录及其子文件.
+.mtj.tmp/
+
+# 打包文件,忽略所有以[.jar]或[.war]或[.nar]或[.ear]或[.zip]或[.tar.gz]或[rar]结尾的文件.
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# 虚拟机崩溃日志,忽略所有以[hs_err_pid]开头的文件
+hs_err_pid*
+
+#maven忽略文件                           
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+.log
+
+#IntelliJ IDEA 忽略文件
+.idea
+*.iws
+*.iml
+*.ipr
+.mvn
+mvnw*
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+
+### generated files ###
+bin/
+gen/
+
+### MAC ###
+.DS_Store
+
+### Other ###
+logs/
+log
+temp/
