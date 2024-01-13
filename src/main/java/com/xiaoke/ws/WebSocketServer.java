@@ -1,8 +1,9 @@
 package com.xiaoke.ws;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.xiaoke.entity.RequestMessage;
-import com.xiaoke.entity.ResponseMessage;
+import com.xiaoke.entity.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import javax.websocket.*;
@@ -28,7 +29,6 @@ public class WebSocketServer {
 
     /**
      * 连接建立时被调用
-     *
      * @param session  websocket的session
      * @param userName 用户昵称
      * @Description @PathParam注解用于获取路径参数,是websocket自己实现的一个注解
@@ -45,9 +45,9 @@ public class WebSocketServer {
             addCount();
         }
         //广播消息,通知所有用户
-        String msg = String.valueOf(new ResponseMessage(true, null, onlineUsers.keySet()));
+        String msg = JSON.toJSONString(R.createMsg(true, null, onlineUsers.keySet()), SerializerFeature.WriteNullStringAsEmpty);
         broadcast(msg);
-        log.info("当前在线人数为：{}", getCount());
+        log.info("当前在线人数为：{}，分别是：{}", getCount(),onlineUsers.keySet());
     }
 
     /**
@@ -58,19 +58,21 @@ public class WebSocketServer {
     public void onMessage(String message) throws IOException {
         RequestMessage requestMessage = JSON.parseObject(message, RequestMessage.class);
         if (requestMessage.getMsg().isEmpty()) {
-            this.session.getBasicRemote().sendText("消息不能为空");
+            String msg = JSON.toJSONString(R.createMsg(true, null, "消息不能为空"), SerializerFeature.WriteNullStringAsEmpty);
+            this.session.getBasicRemote().sendText(msg);
         } else if (requestMessage.getToName().equals("all")) {
-            String msg = String.valueOf(new ResponseMessage(false, this.userName, requestMessage.getMsg()));
+            String msg = JSON.toJSONString(R.createMsg(false, this.userName, requestMessage.getMsg()), SerializerFeature.WriteNullStringAsEmpty);
             broadcast(msg);
         } else if (onlineUsers.containsKey(requestMessage.getToName())) {
             //获取目的用户的Session对象
             WebSocketServer webSocketServer = onlineUsers.get(requestMessage.getToName());
             Session session = webSocketServer.session;
             //发送消息
-            String msg = String.valueOf(new ResponseMessage(false, this.userName, requestMessage.getMsg()));
+            String msg = JSON.toJSONString(R.createMsg(false, this.userName, requestMessage.getMsg()), SerializerFeature.WriteNullStringAsEmpty);
             session.getBasicRemote().sendText(msg);
         } else {
-            this.session.getBasicRemote().sendText("没有指定的目的联系人");
+            String msg = JSON.toJSONString(R.createMsg(true, null, "没有指定的目的联系人"), SerializerFeature.WriteNullStringAsEmpty);
+            this.session.getBasicRemote().sendText(msg);
         }
     }
 
@@ -84,9 +86,9 @@ public class WebSocketServer {
             onlineUsers.remove(userName);
             subCount();
             //通知其他用户，该用户下线了
-            String msg = String.valueOf(new ResponseMessage(true, null, onlineUsers.keySet()));
+            String msg = JSON.toJSONString(R.createMsg(true, null, onlineUsers.keySet()), SerializerFeature.WriteNullStringAsEmpty);
             broadcast(msg);
-            log.info("当前在线人数为：{}", getCount());
+            log.info("当前在线人数为：{}，分别是：{}", getCount(),onlineUsers.keySet());
         }
     }
 
@@ -96,9 +98,9 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Throwable error) throws IOException {
-        String msg = String.valueOf(new ResponseMessage(true, null, "发生错误："+error.getMessage()));
+        String msg = JSON.toJSONString(R.createMsg(true, null, "发生错误：消息格式不正确"), SerializerFeature.WriteNullStringAsEmpty);
         this.session.getBasicRemote().sendText(msg);
-        log.error("用户{}发生错误，原因是：{}",this.userName,error.getMessage());
+        log.error("用户{}发生错误，原因是：消息格式不正确，具体原因是：{}",this.userName,error.getMessage());
     }
 
     /**
